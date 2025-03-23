@@ -76,4 +76,6 @@ git add .
 git commit -m "Added hERG dataset"  
 git push origin main  
 
+You can watch this video explaining how you can download these datasets from TDC -- https://youtu.be/mxs_Q9idFgM?si=igROmNuOgHbHqq4T  
+
 **That's it!!** You can open your git hub repository and **check whether you can see the pushed files** :)
