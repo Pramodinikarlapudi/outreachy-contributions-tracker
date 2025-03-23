@@ -64,9 +64,9 @@ Command -- cd/d/outreachy-contributions-tracker/data
 
 Copy the files from Downloads :
 
-cp ~/Downloads/hREG_train.csv .
-cp ~/Downloads/hREG_valid.csv .
-cp ~/Downloads/hREG_test.csv .
+cp ~/Downloads/hREG_train.csv .  
+cp ~/Downloads/hREG_valid.csv .  
+cp ~/Downloads/hREG_test.csv .  
 
 In Git Bash, add the files to your repository.
 
