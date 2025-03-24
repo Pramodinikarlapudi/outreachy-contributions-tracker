@@ -64,3 +64,5 @@ To download the files from our drive (Go to the drive > TDC-Datasets folder > ri
 
 Open your Git Bash terminal and push the data set files to your repository.  
 
+Please refer to https://youtu.be/YV74aapk72A?si=oWJm35VK9-bY9f7m, if you aren't able to follow these steps / face any issues.  
+
