@@ -64,5 +64,72 @@ To download the files from our drive (Go to the drive > TDC-Datasets folder > ri
 
 Open your Git Bash terminal and push the data set files to your repository.  
 
-Please refer to https://youtu.be/YV74aapk72A?si=oWJm35VK9-bY9f7m, if you aren't able to follow these steps / face any issues.  
+Please refer to [This Video](https://youtu.be/YV74aapk72A?si=oWJm35VK9-bY9f7m), if you aren't able to follow these steps / face any issues.  
+
+
+## Outlining featurization process of hERG dataset using Ersilia representation model.  
+
+I selected 'eos4u6p' (**Chemical checker signaturizer**) and implemented it in a python script. 
+
+Explored [Ersilia Model Hub](https://ersilia.io/model-hub) for "Representation" models that convert SMILES into numerical features suitable for machine learning.  
+
+Reviewed models like '**eos8ub5**' (Coconut projections, 8 dims), '**eos2db3**' (DrugBank projections, 8 dims), '**eos8f2t**' (Scaled WHALES, 11 dims), and '**eos4u6p**' (Chemical checker signaturizer, 3200 dims).  
+
+**Model Chosen**  'eos4u6p' - "Chemical Checker 25 Bioactivity Signatures (2020-02 version)"  
+
+It generates 25 signatures (128 dimensions each) totaling 3200 features per compound, capturing 2D/3D fingerprints, scaffolds, binding affinities, side effects and cell bioassay data.  
+
+hERG cardiotoxicity depends on ion channel binding and side effects -- eos4u6p's signatures directl target these, unlike pure structural models (Eg. Coconut projections)  
+
+3200 dimensions provide a detailed view making it ideal if i apply Random Forest.  (Helps my model uncover complex patterns in hERG blockage).  
+
+'**eos4u6p**' has been trained on diverse bioactivity data making it suitable for hERG's synthetic drug-like compounds over natural product focused models.  
+
+But, it was **computionally challenging** -- 41MB output. WSL Handled it (Took complete 45 mins though :( )  
+
+**Implementing Featurization**  
+
+I created a 'featurize.py' in 'notebooks/' folder.  
+
+Combined 'hERG_train.csv', 'hERG_valid.csv' & 'hERG_test.csv' into 655 SMILES using **pandas**  
+
+Used 'ErsiliaModel("eos4u6p") to fetch and serve model.  
+
+Processed SMILES in batches of 20 to manage memory (as 3200 dims is huge).  
+
+Saved features to 'data/hERG_ccsign_features.csv' - 655 rows, 3202 columns (3200 features + SMILES + Label).  
+
+Please refer to '**notebooks/featurize.py**' for full implementation.  
+
+**Ran in WSL Ubuntu with Conda environment 'ersilia'** (Also Python3, RDKit, pandas, numpy installed).  
+
+Activate environment  
+
+```
+conda activate ersilia
+
+```
+
+Fetch and serve model  
+
+```
+ersilia -v fetch eos4u6p
+ersilia serve eos4u6p
+
+```
+
+Finally run featurization.  
+
+```
+cd /mnt/d/outreachy-contributions-tracker/notebooks $ python3 featurize.py
+
+```
+
+Initial NoneType error was handled by the model's "conventional run" - **no data cleaning needed**  
+
+**hERG_ccsign_features.csv** contains 655 compounds, **each with 3200 bioactivity features**.  
+
+
+
+
 
