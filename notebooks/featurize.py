@@ -35,4 +35,3 @@ hERG_features_df['Label'] = hERG_labels
 hERG_features_df.to_csv("/mnt/d/outreachy-contributions-tracker/data/hERG_ccsign_features.csv", index=False)
 
 print("hERG features shape:", hERG_features.shape)
-print("Features saved!")
