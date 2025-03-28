@@ -129,6 +129,19 @@ Initial NoneType error was handled by the model's "conventional run" - **no data
 
 **hERG_ccsign_features.csv** contains 655 compounds, **each with 3200 bioactivity features**.  
 
+**Visualizing raw hERG dataset**  
+
+![hERG_label_dist](https://github.com/user-attachments/assets/7353466f-0b2d-4e66-ab15-8e055afb8309)  
+
+Our data is not imbalanced (it has 70:30 ratio in every set) and we can train our models now.  
+
+
+
+
+
+
+
+
 
 
 
