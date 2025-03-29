@@ -176,7 +176,38 @@ all_smiles.to_csv("/mnt/d/outreachy-contributions-tracker/data/hERG_3_smiles.txt
 
 ```
 
+**Step 02**  
 
+You'll need Open Babel (to help you convert SMILES strings to a seperate 3D SDF file manually)  
+
+(I have done it manually to ensure accuracy but, can just be done all at a time)  
+
+```
+echo "Oc1ccc(CCN2CCC(Nc3nc4ccccc4n3Cc3ccc(F)cc3)CC2)cc1" | obabel -i smi -o sdf -O data/hERG_mol_1.sdf --gen3D
+echo "Fc1ccc(C(OCC[NH+]2CC[NH+](CCCc3ccccc3)CC2)c2ccc(F)cc2)cc1" | obabel -i smi -o sdf -O data/hERG_mol_2.sdf --gen3D
+echo "CCCCCCC[N+](CC)(CC)CCCCc1ccc(Cl)cc1.CCCCCCC[N+](CC)(CC)CCCCc1ccc(Cl)cc1.CCCCCCC[N+](CC)(CC)CCCCc1ccc(Cl)cc1.O=P([O-])([O-])[O-]" | obabel -i smi -o sdf -O data/hERG_mol_3.sdf --gen3D
+
+ ```
+
+Above commands create individual SDF files, each with 3D coordinates generated using **--gen3D**.  
+
+**Step 03**
+
+We'll be seeing only some random numbers in our saved SDF files.  
+
+Download **Avogadro** from avogrado.com for being able to visualize the 3D structures using our saved files.  
+
+Open each SDF file to generate 3D visualizations with the "Ball and Stick" display style.  
+
+```
+
+avogadro /mnt/d/outreachy-contributions-tracker/data/hERG_mol_1.sdf
+
+```
+
+We can repeat the same command for all the molecules we want to visualize (understand it's structure).  
+
+This command automatically opens avogadro software and you will be directed to the visualization.  
 
 
 
