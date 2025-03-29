@@ -1,0 +1,10 @@
+Oc1ccc(CCN2CCC(Nc3nc4ccccc4n3Cc3ccc(F)cc3)CC2)cc1 Molecule_1
+Fc1ccc(C(OCC[NH+]2CC[NH+](CCCc3ccccc3)CC2)c2ccc(F)cc2)cc1 Molecule_2
+CCCCCCC[N+](CC)(CC)CCCCc1ccc(Cl)cc1.CCCCCCC[N+](CC)(CC)CCCCc1ccc(Cl)cc1.CCCCCCC[N+](CC)(CC)CCCCc1ccc(Cl)cc1.O=P([O-])([O-])[O-] Molecule_3
+O=C1NCN(c2ccccc2)C12CC[NH+](CCCC(c1ccc(F)cc1)c1ccc(F)cc1)CC2 Molecule_4
+Fc1ccc(C(OCCN2CCN(CCCc3ccccc3)CC2)c2ccc(F)cc2)cc1 Molecule_5
+CS(=O)(=O)Nc1ccc2c(c1)C(=O)CC1(CCN(CCc3ccc4nonc4c3)CC1)O2 Molecule_6
+O=C1NCCN1CCN1CC=C(c2cn(-c3ccc(F)cc3)c3ccc(Cl)cc23)CC1 Molecule_7
+C[NH+](CCOc1ccc(NS(C)(=O)=O)cc1)CCc1ccc(NS(C)(=O)=O)cc1 Molecule_8
+CN(C)Cc1cc2cc(Cl)ccc2n1-c1ccc(F)cc1 Molecule_9
+C[C@H]1O[C@@H](O[C@H]2[C@@H](O)C[C@H](O[C@H]3[C@@H](O)C[C@H](O[C@H]4CC[C@]5(C)[C@H]6CC[C@]7(C)[C@@H](C8=CC(=O)OC8)CC[C@]7(O)[C@@H]6CC[C@@H]5C4)O[C@@H]3C)O[C@@H]2C)C[C@H](O)[C@@H]1O Molecule_10
