@@ -155,8 +155,26 @@ The first three SMILES strings from the 'Drug' Column of 'hERG_train.csv', 'hERG
    
    ![hERG_mol_3](https://github.com/user-attachments/assets/5098da8e-e8ac-4470-9e1b-316f80157312)
 
+**Step01**
 
-   
+SMILES Extraction (from CSV files to create a manageable subset)  
+
+`notebooks/extract_smiles.py`  
+
+```
+import pandas as pd
+
+train = pd.read_csv("/mnt/d/outreachy-contributions-tracker/data/hERG_train.csv")
+valid = pd.read_csv("/mnt/d/outreachy-contributions-tracker/data/hERG_valid.csv")
+test = pd.read_csv("/mnt/d/outreachy-contributions-tracker/data/hERG_test.csv")
+
+```
+
+```
+all_smiles = pd.concat([train['Drug'], valid['Drug'], test['Drug']]).head(3)
+all_smiles.to_csv("/mnt/d/outreachy-contributions-tracker/data/hERG_3_smiles.txt", index=False, header=False)
+
+```
 
 
 
