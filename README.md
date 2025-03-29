@@ -135,6 +135,28 @@ Initial NoneType error was handled by the model's "conventional run" - **no data
 
 Our data is not imbalanced (it has 70:30 ratio in every set) and we can train our models now.  
 
+**3D Molecule Visualizations**  // Optional 
+
+I have converted a very small subset of SMILES strings from the hERG dataset into 3D SDF files.  
+
+The first three SMILES strings from the 'Drug' Column of 'hERG_train.csv', 'hERG_valid.csv', 'hERG_test.csv' (Combined)  
+
+**SMILES List**
+
+1. `Oc1ccc(CCN2CCC(Nc3nc4ccccc4n3Cc3ccc(F)cc3)CC2)cc1`
+   
+   ![hERG_mol_1](https://github.com/user-attachments/assets/06970794-5ff5-4737-8ee0-02db874efa49)
+
+2. `Fc1ccc(C(OCC[NH+]2CC[NH+](CCCc3ccccc3)CC2)c2ccc(F)cc2)cc1`
+   
+   ![hERG_mol_2](https://github.com/user-attachments/assets/5e110e00-ffac-4764-b286-8225348565df)
+
+3. `CCCCCCC[N+](CC)(CC)CCCCc1ccc(Cl)cc1.CCCCCCC[N+](CC)(CC)CCCCc1ccc(Cl)cc1.CCCCCCC[N+](CC)(CC)CCCCc1ccc(Cl)cc1.O=P([O-])([O-])[O-]`
+   
+   ![hERG_mol_3](https://github.com/user-attachments/assets/5098da8e-e8ac-4470-9e1b-316f80157312)
+
+
+   
 
 
 
