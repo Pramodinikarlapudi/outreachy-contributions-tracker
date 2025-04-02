@@ -2,7 +2,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# Loading the already calculated Coconut features
 data = pd.read_csv("/mnt/d/outreachy-contributions-tracker/data/hERG_chemDiv_features.csv")
 y = data['Label']
 
