@@ -66,75 +66,6 @@ Open your Git Bash terminal and push the data set files to your repository.
 
 Please refer to [This Video](https://youtu.be/YV74aapk72A?si=oWJm35VK9-bY9f7m), if you aren't able to follow these steps / face any issues.  
 
-
-## Outlining featurization process of hERG dataset using Ersilia representation model.  
-
-I selected 'eos4u6p' (**Chemical checker signaturizer**) and implemented it in a python script. 
-
-Explored [Ersilia Model Hub](https://ersilia.io/model-hub) for "Representation" models that convert SMILES into numerical features suitable for machine learning.  
-
-Reviewed models like '**eos8ub5**' (Coconut projections, 8 dims), '**eos2db3**' (DrugBank projections, 8 dims), '**eos8f2t**' (Scaled WHALES, 11 dims), and '**eos4u6p**' (Chemical checker signaturizer, 3200 dims).  
-
-**Model Chosen**  'eos4u6p' - "Chemical Checker 25 Bioactivity Signatures (2020-02 version)"  
-
-It generates 25 signatures (128 dimensions each) totaling 3200 features per compound, capturing 2D/3D fingerprints, scaffolds, binding affinities, side effects and cell bioassay data.  
-
-hERG cardiotoxicity depends on ion channel binding and side effects -- eos4u6p's signatures directl target these, unlike pure structural models (Eg. Coconut projections)  
-
-3200 dimensions provide a detailed view making it ideal if i apply Random Forest.  (Helps my model uncover complex patterns in hERG blockage).  
-
-'**eos4u6p**' has been trained on diverse bioactivity data making it suitable for hERG's synthetic drug-like compounds over natural product focused models.  
-
-But, it was **computionally challenging** -- 41MB output. WSL Handled it (Took complete 45 mins though :( )  
-
-**Implementing Featurization**  
-
-I created a 'featurize.py' in 'notebooks/' folder.  
-
-Combined 'hERG_train.csv', 'hERG_valid.csv' & 'hERG_test.csv' into 655 SMILES using **pandas**  
-
-Used 'ErsiliaModel("eos4u6p") to fetch and serve model.  
-
-Processed SMILES in batches of 20 to manage memory (as 3200 dims is huge).  
-
-Saved features to 'data/hERG_ccsign_features.csv' - 655 rows, 3202 columns (3200 features + SMILES + Label).  
-
-Please refer to '**notebooks/featurize.py**' for full implementation.  
-
-**Ran in WSL Ubuntu with Conda environment 'ersilia'** (Also Python3, RDKit, pandas, numpy installed).  
-
-Activate environment  
-
-```
-conda activate ersilia
-
-```
-
-Fetch and serve model  
-
-```
-ersilia -v fetch eos4u6p
-ersilia serve eos4u6p
-
-```
-
-Finally run featurization.  
-
-```
-cd /mnt/d/outreachy-contributions-tracker/notebooks $ python3 featurize.py
-
-```
-
-Initial NoneType error was handled by the model's "conventional run" - **no data cleaning needed**  
-
-**hERG_ccsign_features.csv** contains 655 compounds, **each with 3200 bioactivity features**.  
-
-**Visualizing raw hERG dataset**  
-
-![hERG_label_dist](https://github.com/user-attachments/assets/7353466f-0b2d-4e66-ab15-8e055afb8309)  
-
-Our data is slightly imbalanced (it has 70:30 ratio in every set), let's train our models now.  
-
 **3D Molecule Visualizations**  // Optional 
 
 I have converted a very small subset of SMILES strings from the hERG dataset into 3D SDF files.  
@@ -159,7 +90,7 @@ The first three SMILES strings from the 'Drug' Column of 'hERG_train.csv', 'hERG
 
 SMILES Extraction (from CSV files to create a manageable subset)  
 
-`notebooks/extract_smiles.py`  
+refer **notebooks/extract_smiles.py**  
 
 ```
 import pandas as pd
@@ -208,6 +139,165 @@ avogadro /mnt/d/outreachy-contributions-tracker/data/hERG_mol_1.sdf
 We can repeat the same command for all the molecules we want to visualize (understand it's structure).  
 
 This command automatically opens avogadro software and you will be directed to the visualization.  
+
+path  
+- **notebooks/visuals_hERG.py**
+- **figures/hERG_label_dist.png**  
+     
+**Visualizing raw hERG dataset**  
+![hERG_label_dist](https://github.com/user-attachments/assets/7353466f-0b2d-4e66-ab15-8e055afb8309)  
+
+Our data is slightly imbalanced (it has 70:30 ratio in every set), let's featurize our data now.   
+
+## Outlining featurization process of hERG dataset using Ersilia representation model.  
+
+I selected '**eos4u6p**' (**Chemical checker signaturizer**) and implemented it in a python script. 
+
+Explored [Ersilia Model Hub](https://ersilia.io/model-hub) for "**Representation**" models that convert SMILES into numerical features suitable for machine learning.  
+
+Reviewed models like '**eos8ub5**' (Coconut projections, 8 dims), '**eos2db3**' (DrugBank projections, 8 dims), '**eos8f2t**' (Scaled WHALES, 11 dims), and '**eos4u6p**' (Chemical checker signaturizer, 3200 dims).  
+
+**Model Chosen**  '**eos4u6p**' - "Chemical Checker 25 Bioactivity Signatures (2020-02 version)"  
+
+It generates 25 signatures (128 dimensions each) totaling **3200 features per compound**, capturing 2D/3D fingerprints, scaffolds, binding affinities, side effects and cell bioassay data.  
+
+hERG cardiotoxicity depends on ion channel binding and side effects -- **eos4u6p**'s signatures directly target these, unlike pure structural models (Eg. Coconut projections)  
+
+3200 dimensions provide a detailed view making it ideal if i apply Random Forest.  (Helps my model uncover complex patterns in hERG blockage).  
+
+'**eos4u6p**' has been trained on diverse bioactivity data making it suitable for hERG's synthetic drug-like compounds over natural product focused models.  
+
+But, it was **computionally challenging** -- 41MB output. WSL Handled it (Took complete 45 mins though :( )  
+
+**Implementing Featurization**  
+
+- I created a 'featurize.py' in 'notebooks/' folder.  
+
+- Combined 'hERG_train.csv', 'hERG_valid.csv' & 'hERG_test.csv' into 655 SMILES using **pandas**  
+
+- Used 'ErsiliaModel("eos4u6p") to fetch and serve model.  
+
+- Processed SMILES in batches of 20 to manage memory (as 3200 dims is huge).  
+
+- Saved features to 'data/hERG_ccsign_features.csv' - 655 rows, 3202 columns (3200 features + SMILES + Label).  
+
+Please refer to '**notebooks/featurize.py**' for full implementation.  
+
+**Implemented in WSL Ubuntu with Conda environment 'ersilia'** (Also Python3, RDKit, pandas, numpy installed).  
+
+Activate environment  
+
+```
+conda activate ersilia
+
+```
+
+Fetch and serve model  
+
+```
+ersilia -v fetch eos4u6p
+ersilia serve eos4u6p
+
+```
+
+Finally run featurization.  
+
+```
+cd /mnt/d/outreachy-contributions-tracker/notebooks $ python3 featurize.py
+
+```
+
+Initial NoneType error was handled by the model's "conventional run" - **no data cleaning needed**  
+
+**hERG_ccsign_features.csv** contains 655 compounds, **each with 3200 bioactivity features**.  
+
+**Evaluating Featurized data 'eos4u6p'**  
+
+path  
+- **notebooks/visuals_hERG.py**  
+- **figures/hERG_feature_corr.png**  
+
+1. **Correlation HeatMap**
+
+   ![hERG_feature_corr (2)](https://github.com/user-attachments/assets/9c7e5197-4700-4675-bdd8-0acb883d9dff)
+
+   Heatmap helps us evaluate our featurized data in detail.
+
+   - **Diagonal is dark red** indicating every feature is perfectly correlated with itself (**this is observed in every correlation heatmap**)
+   - **Red (closer to +1.0)** indicates **strong positive correlation** among features (when one feature increases, the other also increases)
+   - **Blue (closer to -1.0)** indicates **strong negative correlation** among features (i.e., inversely proportional. When one feature increases, the other decreases)
+   - **White/Gray** (approx / near 0.0) indicates **little to no correlation** (i.e., features are independent)
+
+In this heatmap, **most non-diagonal values are light colored**, meaning weak or no correlation among most features.  
+Some features have mild positive correlation (**light red patches**), some have mild negative correlation (**light blue patches**).
+
+Overall, **there is no extreme correlations** apart from the diagonal, suggesting that **hERG dataset doesn't have highly redundant features**.  
+
+This is a **very good sign** as **highly correlated features lead to multicollinearity**, which can affect our model's performance.  
+
+path  
+- **notebooks/visuals_hERG.py**  
+- **figures/hERG_pca_labels.png**  
+
+2. **PCA Analysis 'eos4u6p'**
+
+   ![hERG_pca_labels](https://github.com/user-attachments/assets/ed3349fa-ea9c-45d8-ba47-75cdfeb592de)
+
+   Points are spread across **PCA1 (-2 to 3)** and **PCA (-2 to 2)**, showing how the compounds differ in their bioactivity signatures.
+
+   - There is **significant** overlap between blockers and non-blockers, especially around PCA1 = 0 to 1 and PCA2 = -1 to 1.
+   - This indicates many compounds have **similar bioactivity profiles** despite different hERG outcomes.
+   - **Non-blockers** tend to cluster more **on the left** (PCA1 < 0), suggesting a bioactivity pattern distinct from blockers.
+   - **Blockers** tend to cluster more **on the right** (PCA1 > 1), with a noticeable cluster around PCA1 = 2 to 3, PCA2 = 1 to 2 indicating some blockers have a unique bioactivity signature.
+   - A few **outliers** (PCA ~= 3, PCA ~= 2) are blockers, showing **extreme bioactivity differences**
+
+ The **Significant overlap** suggests that **bioactivity signatures alone don't fully seperate blockers from non-blockers**.
+
+ We can featurize our dataset using different models using same procedure.
+
+ I have experimented with models 
+    - **Projections against Coconut** - 'eos8ub5'
+    - **Chemical space 2D projections against ChemDiv** - 'eos2db3'
+    - **Chemical space 2D projections against DrugBank** - 'eos9gg2'
+
+Let's evaluate **featurized data** using other models as well.  
+
+path  
+- **OtherFeaturizersAnalysis/Visuals02.py**  
+- **figures/Coconut_hERG_pca_labels.png**  
+- **OtherFeaturizersAnalysis/UMAP_Projectionsagainst_Coconut.py**  
+- **figures/Coconut_hERG_umap_labels.png**  
+
+1. **PCA plot** of **Projections against Coconut** 'eos8ub5'
+
+   ![Coconut_hERG_pca_labels (1)](https://github.com/user-attachments/assets/cbeec57c-13b0-4d95-923f-6be42a2ff788)
+
+   **UMAP plot** of **Projections against Coconut** 'eos8ub5'
+
+   ![Coconut_hERG_umap_labels (1)](https://github.com/user-attachments/assets/54e29663-5311-49f1-ba88-529dffcb687d)
+
+
+   **HEAVY Overlap** very difficult to classify using this featurized data.
+
+2. **PCA plot** of **Chemical space 2D projections against ChemDiv** 'eos2db3'
+
+   ![chemDiv_hERG_pca_labels (1)](https://github.com/user-attachments/assets/22537067-7b3d-4144-ac7e-34bb44879baa)
+
+   **UMAP plot** of **Chemical space 2D projections against ChemDiv** 'eos2db3'
+
+   ![chemDiv_hERG_umap_labels (1)](https://github.com/user-attachments/assets/235a52ff-754d-4d0e-a49c-710e43a6ed22)
+
+3. **PCA plot** of **Chemical space of 2D projections against DrugBank** 'eos9gg2'
+
+   ![DrugBank_hERG_pca_labels (1)](https://github.com/user-attachments/assets/3e1e750a-6c6b-42dd-b7ed-fe2e591de7d6)
+
+   **UMAP plot** of **Chemical space 2D projections against DrugBank** 'eos9gg2'
+
+   ![DrugBank_hERG_umap_labels (1)](https://github.com/user-attachments/assets/01ff4292-28b2-4807-a299-fcf2aff111be)
+
+On comparing all four model's featurized data, we can clearly understand that our first choice of featurizer **Chemical checker signaturizer** - **'eos4u6p'** gives us more classifiable data.  
+
+Now, **let's train our model using non-linear models** like **Random Forest**, **XG-Boost** or **Support Vector Machine (SVM)** as PCA visualization showed overlap between blockers and non-blockers, **suggesting non-linear relationships in the bioactivity space**.
 
 ## Model Training  
 
@@ -278,9 +368,9 @@ rf.fit(X_train, y_train)
 
 We are evaluating RFC model's performance on **20%** of test set (**131 compounds**)
 
-**Accuracy - 0.79** - Indicating 79% of predictions were correct.
-**Precision - 0.80** - From the compounds predicted as blockers, only 80% were actual blockers.  
-**Recall - 0.95** - Model Identified 95% of actual blockers in the test set.  
+**Accuracy - 0.79** - Indicating 79% of predictions were correct.  
+**Precision - 0.80** - From the compounds predicted as blockers, only 80% were actual blockers.   
+**Recall - 0.95** - Model Identified 95% of actual blockers in the test set.   
 
 **High Recall indicates that model is excellent at detecting hERG blockers and non-blockers, reducing the risk of missing dangerous compounds -- Crucial**
 
@@ -306,6 +396,7 @@ We are evaluating RFC model's performance on **20%** of test set (**131 compound
 2.**True Negatives (TN)** - Correctly classified 16 samples as negative.  
 3.**False Positives (FP)** - Model **incorrectly classified 22 negative samples as positive** (**Very high false alarm rate**).  
 4.**False Negatives (FN)** - Model missed 5 actual positive cases (Very good job here)  
+
 
 
 
