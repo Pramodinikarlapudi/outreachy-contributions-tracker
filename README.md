@@ -133,7 +133,7 @@ Initial NoneType error was handled by the model's "conventional run" - **no data
 
 ![hERG_label_dist](https://github.com/user-attachments/assets/7353466f-0b2d-4e66-ab15-8e055afb8309)  
 
-Our data is not imbalanced (it has 70:30 ratio in every set) and we can train our models now.  
+Our data is slightly imbalanced (it has 70:30 ratio in every set), let's train our models now.  
 
 **3D Molecule Visualizations**  // Optional 
 
@@ -208,6 +208,108 @@ avogadro /mnt/d/outreachy-contributions-tracker/data/hERG_mol_1.sdf
 We can repeat the same command for all the molecules we want to visualize (understand it's structure).  
 
 This command automatically opens avogadro software and you will be directed to the visualization.  
+
+## Model Training  
+
+Let's now train our hERG dataset using a '**Random Forest Classifier (RFC)**', it has a strong baseline performance on binary classification tasks.  
+
+For our **hERG** classification, dataset is imbalanced and **RFC** provides features like 
+
+```
+class_weight='balanced'
+```
+
+Also, **RFC** makes no assumptions about feature distributions, relationships between features and labels which is **Ideal** for us.
+
+
+for detailed implementation refer - **notebooks/trainRFC_hERG.py**  
+
+**Install Necessary libraries** - Obvious first step :)
+
+```
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+```
+
+```
+from sklearn.ensemble import RandomForestClassifier
+from skelarn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, precision_score, recall_score, roc_curve, confusion_matrix
+```
+
+**Train the model using featurized data**
+
+```
+data = pd.read_csv("/mnt/d/outreachy-contributions-tracker/data/hERG_ccsign_features.csv")
+X = data.drop(columns=['SMILES', 'Label'])
+y = data['Label']
+```
+Customize the path as needed.
+
+**Splitted data into 80-20 train-test sets (524 train, 131 test)**  Can use different ratio but make sure you are giving your model enough data to train on.  
+
+```
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+```
+**random_state=42** setting makes sure we are getting same results on each run.  
+
+**Key Hyperparameter settings**
+
+1. **n_estimators=100**
+2. **class_weight='balanced'**
+3. **random_state=42**
+
+**n_estimators** - No.of.Trees we would like to train our data on, I chose 100 (Neither too less nor too many trees). More number of trees leads to overfitting (Our model learns unnecessary noise in the training data)  
+
+**class_weight='balanced'** - As visualized, our dataset is imbalanced, hence for giving equal importance to both the classes (blockers and non-blockers) we used balanced feature.  
+
+```
+rf = RandomForestClassifier(n_estimators=100, random_state=42, class_weight='balanced')
+rf.fit(X_train, y_train)
+```
+
+**Evaluating our model (RFC)**
+
+| Accuracy | Precision | Recall |
+|----------|-----------|--------|
+| 0.79 | 0.80 | 0.95 |
+
+We are evaluating RFC model's performance on **20%** of test set (**131 compounds**)
+
+**Accuracy - 0.79** - Indicating 79% of predictions were correct.
+**Precision - 0.80** - From the compounds predicted as blockers, only 80% were actual blockers.  
+**Recall - 0.95** - Model Identified 95% of actual blockers in the test set.  
+
+**High Recall indicates that model is excellent at detecting hERG blockers and non-blockers, reducing the risk of missing dangerous compounds -- Crucial**
+
+**ROC-AUC Curve**  
+
+![hERG_roc_curve](https://github.com/user-attachments/assets/0a72cc17-5177-4beb-ae5a-a38bf73239a6)
+
+**AUC = 0.86** indicates that our RFC has an **86%** probablility of ranking a randomly chosen positive instances **higher** than a randomly chosen negative ones.  
+
+**Our RFC is effectively identifying hERG blockers**
+
+
+**Confusion Matrix**  
+
+![hERG_confusion_matrix](https://github.com/user-attachments/assets/0d76b1df-b2ed-4890-90d0-34a39bd589e7)
+
+| Actual vs Predicted | Predicted: 0| Predicted: 1 |
+|---------------------|-------------|--------------|
+| Actual: 0 | 16 | 22 |
+| Actual: 1 | 5 | 88 |
+
+1.**True Positives (TP)** - Correctly classified 88 samples as positive. (Model did very well in identifying hERG blockers).  
+2.**True Negatives (TN)** - Correctly classified 16 samples as negative.  
+3.**False Positives (FP)** - Model **incorrectly classified 22 negative samples as positive** (**Very high false alarm rate**).  
+4.**False Negatives (FN)** - Model missed 5 actual positive cases (Very good job here)  
+
+
+
+
 
 
 
