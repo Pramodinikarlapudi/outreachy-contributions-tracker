@@ -1,3 +1,11 @@
+# hERG Blockage Prediction 🫀
+ - **Dataset details**
+ - **Visualizing chemical compounds using [Avogadro software](https://avogadro.cc/)**
+ - **Featurizing using `Representation Models` from [Ersilia Model Hub](https://www.ersilia.io/model-hub)**
+ - **Training on `RFC` & `Xg-Boost`**
+ - **Evaluating Model's performance on `ChEMBL hERG Dataset`**
+ - **Implementing research paper [hERGAT](https://jcheminf.biomedcentral.com/articles/10.1186/s13321-025-00957-x)**
+
 ## Downloading hERG and Tox21 datasets from TDC (Therapeutics Data Commons), saving them to Google Drive and Git repo.  
 
 Tools we'll use -
