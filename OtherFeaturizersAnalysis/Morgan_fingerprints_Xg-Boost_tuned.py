@@ -23,7 +23,8 @@ xgb.fit(X_train, y_train)
 y_pred = xgb.predict(X_test)
 y_prob = xgb.predict_proba(X_test)[:,1]
 
-
+xgb.save_model("/mnt/d/outreachy-contributions-tracker/OtherFeaturizersAnalysis/hERG_xgb_model.json")
+print("Model saved to hERG_xgb_model.json")
 
 accuracy = accuracy_score(y_test, y_pred)
 precision = precision_score(y_test, y_pred)
