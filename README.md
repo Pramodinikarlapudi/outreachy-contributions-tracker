@@ -6,6 +6,14 @@
  - **Evaluating Model's performance on `ChEMBL hERG Dataset`**
  - **Implementing research paper [hERGAT](https://jcheminf.biomedcentral.com/articles/10.1186/s13321-025-00957-x)**
 
+## 📝 Introduction  
+The `human ether-a-go-go-related gene` (**hERG**) codes for a protein known as `Kv11.1`, which is the alpha subunit of a potassium ion channel critical for **cardiac electrical signaling**.  
+- Scientists have been using `vitro` tests such as `radioligand binding` and `QTc analyses` to assess the inhibitory effects of compounds on the hERG channel.
+- [Vitro](https://www.fda.gov/medical-devices/products-and-medical-procedures/in-vitro-diagnostics) & [QTc](https://pubmed.ncbi.nlm.nih.gov/36772881/) tests are both **time consuming** and **financially inefficient** as we have to test every single compound.
+- With the increasing **availability of data** related to hERG channel, **deep learning** models have recently emerged as a **more effective** approach to predict hERG blockers.
+
+## 🔎 Dataset details
+
 ## Downloading hERG and Tox21 datasets from TDC (Therapeutics Data Commons), saving them to Google Drive and Git repo.  
 
 Tools we'll use -
