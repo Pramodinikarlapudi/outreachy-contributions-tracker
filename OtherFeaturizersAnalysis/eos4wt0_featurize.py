@@ -2,18 +2,16 @@ import pandas as pd
 import numpy as np
 from ersilia import ErsiliaModel
 
-# Load hERG
 hERG_train = pd.read_csv("/mnt/d/outreachy-contributions-tracker/data/hERG_train.csv")
 hERG_valid = pd.read_csv("/mnt/d/outreachy-contributions-tracker/data/hERG_valid.csv")
 hERG_test = pd.read_csv("/mnt/d/outreachy-contributions-tracker/data/hERG_test.csv")
 hERG_all = pd.concat([hERG_train, hERG_valid, hERG_test])
 hERG_smiles = hERG_all["Drug"].tolist()
 
-# Load model
 model = ErsiliaModel("eos4wt0")
 model.serve()
 
-# Featurize with batching
+
 def batch_run(smiles_list, batch_size=10):
     features = []
     for i in range(0, len(smiles_list), batch_size):
