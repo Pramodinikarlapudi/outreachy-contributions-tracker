@@ -642,12 +642,135 @@ Results were **pretty good** and I was **able to achieve the ROC-AUC of 0.88** (
 
 Model's performance **Significantly** Increased on using **eos4wt0**  
 
-## 📍Testing on ChEMBL hERG Dataset
+## 📍Testing on ChEMBL hERG Dataset  
 
-## 🔬 Implementing hERGAT paper
+**`ChEMBL`** is a large-scale bio activity database containing detailed experimental data for `drug-like` compounds, Ideal for `evaluating ML models` in therapeutic research.  
+
+**Downloading hERG dataset in detail 📥**  
+
+- Visit **[ChEMBL](https://www.ebi.ac.uk/chembl/)**, choose your target **`hERG`**
+- On selecting the target as **`hERG`** you should be directed to **[detailed filters page](https://www.ebi.ac.uk/chembl/explore/target/CHEMBL240#NameAndClassification)**
+- Select **Name and Classification** : **Ion Channel** (check left nav bar).
+- On selecting **Ion Channel** -> You'll be directed to **[detailed features filtering page](https://www.ebi.ac.uk/chembl/explore/targets/STATE_ID:aXly8SZHDEs7DcFYkU618A%3D%3D)**
+- **Filters** - Organism Taxonomy L1 : **`Eukaryotes`**
+              - Organism : **`Homo sapiens`**
+              - Protein Classification : **`Ion Channel`**
+- **Post applying necessary filters Download the dataset in `CSV format`**. (Check top right 👀)
+  
+**Dataset** downloaded has around `1,000+` compounds, I have selected the first few compounds and cleaned the data. 
+
+**(Removed duplicate SMILES, Blank IC50 information rows, also removed extra physico-chemical relation information Eg. ALOGP, Molecular Weight...)**  
+
+**Notable Points**
+
+- Made sure **`training set`** and **`ChEMBL dataset`**'s features match.
+- We can visualize whether **both dataset's chemical space alignment** using PCA plot.
+- **`Orange`** dots indicates **ChEMBL compound's features**.
+- **`Blue`** dots indicate **TDC - Training set compound's features**.
+- Path : **[figures/PCA_TDC_vs_ChEMBL.png](https://github.com/Pramodinikarlapudi/outreachy-contributions-tracker/blob/main/figures/PCA_TDC_vs_ChEMBL.png)**
+       : **[ChEMBL_hERG/PCA_features_comparison.py](https://github.com/Pramodinikarlapudi/outreachy-contributions-tracker/blob/main/ChEMBL_hERG/PCA_features_comparision.py)**
+
+  ![PCA_TDC_vs_ChEMBL](https://github.com/user-attachments/assets/8fc41c32-de9a-4a48-b6fc-49e4d9d50696)
+
+  **PCA clearly indicates the alignment of chemical space**
+
+**Featurized using `eos4wt0` - `Morgan fingerprints in binary form`** - **[OtherfeaturizersAnalysis/chembl_Morgan_featurize.py](https://github.com/Pramodinikarlapudi/outreachy-contributions-tracker/blob/main/OtherFeaturizersAnalysis/chembl_Morgan_featurize.py)**  
+
+Tested on both **XgBoost-tuned** and **XgBoost-Tune02**  
+
+- [ChEMBL_hERG/XgBoost-Tuned-ChEMBL.py](https://github.com/Pramodinikarlapudi/outreachy-contributions-tracker/blob/main/ChEMBL_hERG/XgBoost-Tuned-ChEMBL.py)
+- [ChEMBL_hERG/XgBoost-Tune02-ChEMBL.py](https://github.com/Pramodinikarlapudi/outreachy-contributions-tracker/blob/main/ChEMBL_hERG/XgBoost-Tune02-ChEMBL.py)
+
+**Results** are as follows :
+
+**Confusion Matrix - XgBoost Tuned**  
+
+![hERG_ChEMBL_xgb_confusion_matrix](https://github.com/user-attachments/assets/287efcc8-1e36-4eac-8280-c92680878e03)  
+
+**Confusion Matrix - XgBoost Tune-02**  
+
+![hERG_ChEMBL_xgb_tune2_confusion_matrix](https://github.com/user-attachments/assets/47e6053b-3133-4b0e-90c2-53a57e9924d7)  
+
+**Model has alarming False Positive Rate** but **It is the best at predicting blockers**  
+
+**ROC-AUC - XgBoost Tuned**  
+
+![hERG_ChEMBL_xgb_roc_curve](https://github.com/user-attachments/assets/1dbe498d-44b2-4927-a8e9-a1344b79da5f)  
+
+**ROC-AUC - XgBoost Tune02**  
+
+![hERG_ChEMBL_xgb_tune2_roc_curve](https://github.com/user-attachments/assets/432e6fba-981e-458d-a607-a436d7780a87)  
+
+**Model is great at predicting blockers but misclassifies non-blockers as blockers**  
+
+## 🔬 Implementing [hERGAT paper](https://jcheminf.biomedcentral.com/articles/10.1186/s13321-025-00957-x)  
  
+**[hERGAT](https://jcheminf.biomedcentral.com/articles/10.1186/s13321-025-00957-x)** approach promises significant good results 😌  
+
+**Experimental performance comparison of hERGAT model on test dataset**  
+
+| Method | Accuracy | AUROC | AUPR | F1-score |
+|--------|----------|-------|------|----------|
+| **hERGAT** | **0.872** | **0.907** | **0.904** | **0.891** |  
+
+Which is so much more efficient compared to both of our **`Xg-Boost`** and **`RFC`** models.  
+
+**This work has been submitted this January and is THE BEST approach with significant reliability**  
+
+**Data Collection** - Collected datasets from **five** different sources.  
+
+1. **ChEMBL** - `7,431` compounds
+2. **PubChem** - `5,931` compounds
+3. **Li Q**
+4. **Wang S**       -- `16,192` compounds from 4 datasets
+5. **Zhang Y**
+6. **Kim H**
+
+![Figure 1](https://github.com/user-attachments/assets/badae6a9-4afd-427b-87eb-82b02f9b5190)  
+
+**Same conditions** - A compound is considered a `hERG blocker`, if the `IC50 value is less than 10µM` and a `hERG non-blocker` if it is `greater than 10µM`.
+
+- Used **SMILES** to represent each compound's molecular formula through `ASCII` strings.
+- Used **RDKit** library to **standardize SMILES**. (Due to possibility of a single compound having multiple valid SMILES representations)
+
+**After Integrating all datasets, Integrated dataset consisted of 23,381 unique compounds. 14,183 hERG Blockers & 9,198 hERG Non-Blockers**  
+
+**External dataset** for validating model's performance. (Consists of atoms that were not included in the training dataset).  
+
+| Use | Both | Blocker | Non-blocker | Source |
+|-----|------|---------|-------------|--------|
+| | 3511 | 1773 | 1738 | Cai C, et al. |
+| External dataset | 325 | 175 | 150 | Chen Y, et al. |
+| | 408 | 227 | 181 | Karim A, et al. |
+
+**Overview of the hERGAT model**
+
+![Figure 2](https://github.com/user-attachments/assets/ea6bf039-1591-4909-b35c-165b8d14ada1)  
+
+**Feature Extraction**  
+1. **Graphical feature extraction** - **Atom connectivity**, **Bond types**, **Neighborhood relationship capabilities**.
+   - Used **RdKit** library to acquire atom and bond features.
+   - The **atom feature vector** consists of a `39-bit vector`.
+   - The **Bond feature vector** has a `10-bit vector`.
+   - Generated an **adjacency matrix** that considers the node's connections. (`1` signifies nodes are connected, `0` signifies they are not connected).
+     
+2. **Physicochemical properties extraction** - **Functions and Behaviours**
+   Physicochemical properties taken into consideration for this study are..
+   - **ALOGP** : (Octanol-water partition coefficienct : Lipid affinity of a compound).
+   - **MW** : (Molecular Weight).
+   - **TPSA** : (Topological polar surface-area).
+   - **HBA** : (Hydrogen Bond acceptors).
+   - **HBD** : (Hydrogen Bond donors).
+
+- A high **ALOGP** indicates that the compound will be better absorbed in a lipid environment, correlates with its `affinity for the hERG channel`.
+- Larger **MW** is related to an increased likelihood of `hERG channel inhibition`.
+- **HBD** & **HBA** do not differ among hERG inhibitors but are useful in `distinguishing active hERG inhibitors`.
+- **TPSA** has a `negative correlation` between `TPSA` and `hERG inhibition potency`.
+
+![Research Paper ss01](https://github.com/user-attachments/assets/2b30e5d7-5ac7-4a06-b1f2-1624684d15dc)  
 
 
+   
 
 
 
