@@ -65,6 +65,15 @@ You can download dataset both from your **`google-colab`** and directly from **`
 
    - Please refer this [**video**](https://youtu.be/YV74aapk72A?si=NvvMEoY1IMJ9XViA), where i explained Installation process in detail.
 
+  **Label Distribution** - **[notebooks/visuals_hERG.py](https://github.com/Pramodinikarlapudi/outreachy-contributions-tracker/blob/main/notebooks/visuals_hERG.py)** **[figures/hERG_label_dist.png](https://github.com/Pramodinikarlapudi/outreachy-contributions-tracker/blob/main/figures/hERG_label_dist.png)**  
+     
+ **Visualizing raw hERG dataset**⚡    
+![hERG_label_dist](https://github.com/user-attachments/assets/7353466f-0b2d-4e66-ab15-8e055afb8309)  
+
+   **Dataset is slightly imbalanced** (More blockers will help our model prioritize not missing blockers, which is actually a good thing).  
+
+   We can balance it with **hyper parameter tuning** when training models. Let's not complicate things ☕︎.  
+
 ## 𓂃🖌 Visualizing compounds in 3D  
 
 Few colorful **3D visualizations** of compounds in our hERG dataset hurts no one ⋆˚✿˖°  
@@ -106,7 +115,7 @@ I have **`converted`** a small subset of **`SMILES strings`** from the dataset *
      ```
    - **Repeat** the same command for all the **molecules you want to visualize**.
 
- Here's **how first three molecules** from my dataset looks like ⋆⭒˚.⋆🪐 ⋆⭒˚.⋆  
+ Here's **how first three molecules** from dataset looks like ⋆⭒˚.⋆🪐 ⋆⭒˚.⋆  
 
  **SMILES** - **Oc1ccc(CCN2CCC(Nc3nc4ccccc4n3Cc3ccc(F)cc3)CC2)cc1**  
  
@@ -121,101 +130,111 @@ I have **`converted`** a small subset of **`SMILES strings`** from the dataset *
    ![hERG_mol_3](https://github.com/user-attachments/assets/5098da8e-e8ac-4470-9e1b-316f80157312)
 
 
+## 👩🏻‍💻 Featurizing using Ersilia Representation Models  
 
+**[Ersilia](https://www.ersilia.io/)** offers a growing hub of `pre-trained ML models` designed to support **biomedical** and **chemoinformatics** applications with `minimal setup`.  
 
-## 👩🏻‍💻 Featurizing using Ersilia Representation Models
+There are a **few pre-requisite softwares** needed to support Ersilia on your machine. This [**guide doc**](https://ersilia.gitbook.io/ersilia-book/ersilia-model-hub/installation) will assist you with the installation procedure in detail.  
 
-## </> Training RFC & Xg-boost models
+**Pre-requisite Softwares**  
+ - `Python` & `Miniconda`
+ - `GCC Compiler`
+ - `Git` & `GitHub` CLI
+ - `GIT LFS`
+ - `Docker`
 
-## 📈 Evaluating performance
+**System Requirements** 
+ - If you are using `Windows` -- Atleast Windows 10 is compulsory.
+ - If you are using `Mac OS` -- **Ersilia** can be installed directly. 
 
-## 📍Testing on ChEMBL hERG Dataset
+**My System Details**  
+ - Ubuntu : `24.04`
+ - Windows11 : `WSL Integration`
+ - Docker : `28.0.1` (build - 06801e)
 
-## 🔬 Implementing hERGAT paper
+**Detailed Installation procedure**
+ - Create your **conda** environment.
+   
+   ```
+   conda create -n ersilia python=3.12
+   ```
+ - Activate your **conda** environment.
+   
+   ```
+   conda activate ersilia
+   ```
+ - Clone the **Ersilia** github repo from your **CLI**.
+   
+   ```
+   git clone https://github.com/ersilia-os/ersilia.git
+   ```
+ - Change your current directory to **ersilia**.
+   
+   ```
+   cd ersilia
+   ```
+ - Lastly, Install **Ersilia** in `developer mode`.
+   
+   ```
+   pip install -e .
+   ```
+
+**Check if `Ersilia` is properly Installed !!**  
+
+ ```
+ ersilia --help
+ ```
+Your terminal should display something similar to [**this image**](https://private-user-images.githubusercontent.com/97833644/424876158-3b06ad5d-459a-4857-b738-de4658d4d1fc.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDQzNTU3NzksIm5iZiI6MTc0NDM1NTQ3OSwicGF0aCI6Ii85NzgzMzY0NC80MjQ4NzYxNTgtM2IwNmFkNWQtNDU5YS00ODU3LWI3MzgtZGU0NjU4ZDRkMWZjLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTA0MTElMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwNDExVDA3MTExOVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTAyMGNjYTVhYTZkZmZlMmY3ZTEwYWRiOGUzY2VhZTExODcwODEzZTE1NDMzYWQzN2I0MTQ1YzQwMzkwODhmNGEmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.MTfTXSFMO1QBJOfY7nJjraGEeXdMv3RtbFGVR4GHWFg)
+
+Post successful installation of **`Ersilia`**, explored **`Representation Models`** on **[Ersilia Model Hub](https://www.ersilia.io/model-hub)**.
+
+**Experimented with in total of 5 Featurizers** - **[notebooks/featurize.py](https://github.com/Pramodinikarlapudi/outreachy-contributions-tracker/blob/main/notebooks/featurize.py)**
+
+1. **Chemical checker signaturizer** - **`eos4u6p`**
+2. **Morgan fingerprints in binary form (radius 3, 2048 dimensions)** - **`eos4wt0`**
+3. **Projections against Coconut** - **`eos8ub5`**
+4. **Chemical space 2D projections against ChemDiv** - **`eos2db3`**
+5. **Chemical space 2D projections against DrugBank** - **`eos9gg2`**
+
+Chose **Chemical checker signaturizer** - **`eos4u6p`** as it featurizes data into **3200 dimensional bioactivity signatures**, which will help models uncover complex patterns in hERG blockage.
+
+- **`eos4u6p`** generates 25 signatures (**128 dimensions each**) totalling **3200 features per compound**.
+- Captures **2D/3D fingerprints**, **Scaffolds**, **Binding affinities**, **Side effects** and **Cell Bioassay data**.
+- hERG cardiotoxicity **`depends on ion channel binding`** and **`eos4u6p`**'s signatures directly target these. Unlike pure structural models (Eg. **`Projections against Coconut`**).
+- **'eos4u6p'** has been trained on **`diverse bioactivity data`** making it suitable for hERG's synthetic drug like compounds over natural product focused models.
+- **It'll be computationally challenging ⌛** (So..patience!!)
+
+**📐Implementing Featurization**  - **notebooks/featurize.py**  
+
+- Activate **conda** environment
   
+  ```
+  conda activate ersilia
+  ```
+- Combined **'hERG_train.csv'**, **'hERG_valid.csv'**, **'hERG_test.csv'**
+- Fetch & Serve Model **`eos4u6p`**  
 
-path  
-- **notebooks/visuals_hERG.py**
-- **figures/hERG_label_dist.png**  
-     
-**Visualizing raw hERG dataset**  
-![hERG_label_dist](https://github.com/user-attachments/assets/7353466f-0b2d-4e66-ab15-8e055afb8309)  
+  ```
+  ersilia -v fetch eos4u6p
+  ```
+  ```
+  ersilia serve eos4u6p
+  ```
+- **Finally Featurize**
 
-Our data is slightly imbalanced (it has 70:30 ratio in every set), let's featurize our data now.   
+  ```
+  cd /mnt/d/outreachy-contributions-tracker/notebooks $ python3 featurize.py
+  ```
 
-## Outlining featurization process of hERG dataset using Ersilia representation model.  
+- **No Data Cleaning Needed** : Initial **`NoneTypeError`** was handled by the model's **conventional run** (Basically, on itself).
 
-I selected '**eos4u6p**' (**Chemical checker signaturizer**) and implemented it in a python script. 
+Featurized data of **655** compounds, each with **3200 bioactivity features** is stored in **notebooks/hERG_ccsign_features.csv**
 
-Explored [Ersilia Model Hub](https://ersilia.io/model-hub) for "**Representation**" models that convert SMILES into numerical features suitable for machine learning.  
+On analyzing the **correlation between features** post featurization using **`Heat Map`**
 
-Reviewed models like '**eos8ub5**' (Coconut projections, 8 dims), '**eos2db3**' (DrugBank projections, 8 dims), '**eos8f2t**' (Scaled WHALES, 11 dims), and '**eos4u6p**' (Chemical checker signaturizer, 3200 dims).  
+![hERG_feature_corr (3)](https://github.com/user-attachments/assets/ffc8b3ee-6f74-4720-83a6-2edc14088f27)  
 
-**Model Chosen**  '**eos4u6p**' - "Chemical Checker 25 Bioactivity Signatures (2020-02 version)"  
-
-It generates 25 signatures (128 dimensions each) totaling **3200 features per compound**, capturing 2D/3D fingerprints, scaffolds, binding affinities, side effects and cell bioassay data.  
-
-hERG cardiotoxicity depends on ion channel binding and side effects -- **eos4u6p**'s signatures directly target these, unlike pure structural models (Eg. Coconut projections)  
-
-3200 dimensions provide a detailed view making it ideal if i apply Random Forest.  (Helps my model uncover complex patterns in hERG blockage).  
-
-'**eos4u6p**' has been trained on diverse bioactivity data making it suitable for hERG's synthetic drug-like compounds over natural product focused models.  
-
-But, it was **computionally challenging** -- 41MB output. WSL Handled it (Took complete 45 mins though :( )  
-
-**Implementing Featurization**  
-
-- I created a 'featurize.py' in 'notebooks/' folder.  
-
-- Combined 'hERG_train.csv', 'hERG_valid.csv' & 'hERG_test.csv' into 655 SMILES using **pandas**  
-
-- Used 'ErsiliaModel("eos4u6p") to fetch and serve model.  
-
-- Processed SMILES in batches of 20 to manage memory (as 3200 dims is huge).  
-
-- Saved features to 'data/hERG_ccsign_features.csv' - 655 rows, 3202 columns (3200 features + SMILES + Label).  
-
-Please refer to '**notebooks/featurize.py**' for full implementation.  
-
-**Implemented in WSL Ubuntu with Conda environment 'ersilia'** (Also Python3, RDKit, pandas, numpy installed).  
-
-Activate environment  
-
-```
-conda activate ersilia
-
-```
-
-Fetch and serve model  
-
-```
-ersilia -v fetch eos4u6p
-ersilia serve eos4u6p
-
-```
-
-Finally run featurization.  
-
-```
-cd /mnt/d/outreachy-contributions-tracker/notebooks $ python3 featurize.py
-
-```
-
-Initial NoneType error was handled by the model's "conventional run" - **no data cleaning needed**  
-
-**hERG_ccsign_features.csv** contains 655 compounds, **each with 3200 bioactivity features**.  
-
-**Evaluating Featurized data 'eos4u6p'**  
-
-path  
-- **notebooks/visuals_hERG.py**  
-- **figures/hERG_feature_corr.png**  
-
-1. **Correlation HeatMap**
-
-   ![hERG_feature_corr (2)](https://github.com/user-attachments/assets/9c7e5197-4700-4675-bdd8-0acb883d9dff)
-
-   Heatmap helps us evaluate our featurized data in detail.
+Heatmap helps us evaluate our featurized data in detail.
 
    - **Diagonal is dark red** indicating every feature is perfectly correlated with itself (**this is observed in every correlation heatmap**)
    - **Red (closer to +1.0)** indicates **strong positive correlation** among features (when one feature increases, the other also increases)
@@ -229,11 +248,7 @@ Overall, **there is no extreme correlations** apart from the diagonal, suggestin
 
 This is a **very good sign** as **highly correlated features lead to multicollinearity**, which can affect our model's performance.  
 
-path  
-- **notebooks/visuals_hERG.py**  
-- **figures/hERG_pca_labels.png**  
-
-2. **PCA Analysis 'eos4u6p'**
+**PCA Analysis 'eos4u6p'**
 
    ![hERG_pca_labels](https://github.com/user-attachments/assets/ed3349fa-ea9c-45d8-ba47-75cdfeb592de)
 
@@ -247,20 +262,14 @@ path
 
  The **Significant overlap** suggests that **bioactivity signatures alone don't fully seperate blockers from non-blockers**.
 
- We can featurize our dataset using different models using same procedure.
+**After studying multiple papers on hERG blockage predictions, I observed that the featurizer `Morgan fingerprints` (also referred to as `Extended connectivity fingerprints`) is being used extensively to featurize the data**
 
- I have experimented with models 
-    - **Projections against Coconut** - 'eos8ub5'
-    - **Chemical space 2D projections against ChemDiv** - 'eos2db3'
-    - **Chemical space 2D projections against DrugBank** - 'eos9gg2'
+You can use exact same steps to featurize & visualize using any different model on **`Ersilia Model Hub`**.
 
-Let's evaluate **featurized data** using other models as well.  
+Refer - **[OtherFeaturizersAnalysis/eos4wt0_featurize.py](https://github.com/Pramodinikarlapudi/outreachy-contributions-tracker/blob/main/OtherFeaturizersAnalysis/eos4wt0_featurize.py)**
+      - **[data/hERG_Morgan_fingerprints_features.csv](https://github.com/Pramodinikarlapudi/outreachy-contributions-tracker/blob/main/data/hERG_Morgan_fingerprints_features.csv)**
 
-path  
-- **OtherFeaturizersAnalysis/Visuals02.py**  
-- **figures/Coconut_hERG_pca_labels.png**  
-- **OtherFeaturizersAnalysis/UMAP_Projectionsagainst_Coconut.py**  
-- **figures/Coconut_hERG_umap_labels.png**  
+**Also, visualize PCA & UMAPs of other featurizers as well (Helps us visualize the differences more in detail)**  
 
 1. **PCA plot** of **Projections against Coconut** 'eos8ub5'
 
@@ -289,9 +298,20 @@ path
 
    ![DrugBank_hERG_umap_labels (1)](https://github.com/user-attachments/assets/01ff4292-28b2-4807-a299-fcf2aff111be)
 
-On comparing all four model's featurized data, we can clearly understand that our first choice of featurizer **Chemical checker signaturizer** - **'eos4u6p'** gives us more classifiable data.  
+On comparing all model's featurized data, we can clearly understand that our choice of featurizers **Chemical checker signaturizer** & **Morgan fingerprints** gives us more classifiable data.  
 
-Now, **let's train our model using non-linear models** like **Random Forest**, **XG-Boost** or **Support Vector Machine (SVM)** as PCA visualization showed overlap between blockers and non-blockers, **suggesting non-linear relationships in the bioactivity space**.
+**let's train our model using non-linear models** like **Random Forest**, **XG-Boost** or **Support Vector Machine (SVM)** as PCA visualization showed overlap between blockers and non-blockers, **suggesting non-linear relationships in the bioactivity space**.
+
+
+
+## </> Training RFC & Xg-boost models
+
+## 📈 Evaluating performance
+
+## 📍Testing on ChEMBL hERG Dataset
+
+## 🔬 Implementing hERGAT paper
+ 
 
 ## Model Training  
 
