@@ -278,11 +278,9 @@ Refer - **[OtherFeaturizersAnalysis/eos4wt0_featurize.py](https://github.com/Pra
    **UMAP plot** of **Projections against Coconut** 'eos8ub5'
 
    ![Coconut_hERG_umap_labels (1)](https://github.com/user-attachments/assets/54e29663-5311-49f1-ba88-529dffcb687d)
+   
 
-
-   **HEAVY Overlap** very difficult to classify using this featurized data.
-
-2. **PCA plot** of **Chemical space 2D projections against ChemDiv** 'eos2db3'
+3. **PCA plot** of **Chemical space 2D projections against ChemDiv** 'eos2db3'
 
    ![chemDiv_hERG_pca_labels (1)](https://github.com/user-attachments/assets/22537067-7b3d-4144-ac7e-34bb44879baa)
 
@@ -290,7 +288,7 @@ Refer - **[OtherFeaturizersAnalysis/eos4wt0_featurize.py](https://github.com/Pra
 
    ![chemDiv_hERG_umap_labels (1)](https://github.com/user-attachments/assets/235a52ff-754d-4d0e-a49c-710e43a6ed22)
 
-3. **PCA plot** of **Chemical space of 2D projections against DrugBank** 'eos9gg2'
+4. **PCA plot** of **Chemical space of 2D projections against DrugBank** 'eos9gg2'
 
    ![DrugBank_hERG_pca_labels (1)](https://github.com/user-attachments/assets/3e1e750a-6c6b-42dd-b7ed-fe2e591de7d6)
 
@@ -302,22 +300,11 @@ On comparing all model's featurized data, we can clearly understand that our cho
 
 **let's train our model using non-linear models** like **Random Forest**, **XG-Boost** or **Support Vector Machine (SVM)** as PCA visualization showed overlap between blockers and non-blockers, **suggesting non-linear relationships in the bioactivity space**.
 
+## </> Training RFC & Xg-boost models - **notebooks/trainRFC_hERG.py**  
 
+**Random Forest Classifier (RFC)** - Strong baseline performance on **`binary classification tasks`**.  
 
-## </> Training RFC & Xg-boost models
-
-## 📈 Evaluating performance
-
-## 📍Testing on ChEMBL hERG Dataset
-
-## 🔬 Implementing hERGAT paper
- 
-
-## Model Training  
-
-Let's now train our hERG dataset using a '**Random Forest Classifier (RFC)**', it has a strong baseline performance on binary classification tasks.  
-
-For our **hERG** classification, dataset is imbalanced and **RFC** provides features like 
+For **hERG** classification, dataset is slightly imbalanced and **RFC** provides features like 
 
 ```
 class_weight='balanced'
@@ -326,9 +313,7 @@ class_weight='balanced'
 Also, **RFC** makes no assumptions about feature distributions, relationships between features and labels which is **Ideal** for us.
 
 
-for detailed implementation refer - **notebooks/trainRFC_hERG.py**  
-
-**Install Necessary libraries** - Obvious first step :)
+**Install Necessary libraries 📥** - Obvious first step :)
 
 ```
 import pandas as pd
@@ -343,7 +328,7 @@ from skelarn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, precision_score, recall_score, roc_curve, confusion_matrix
 ```
 
-**Train the model using featurized data**
+**Train the model using featurized data 🪐** -- **`eos4u6p`**
 
 ```
 data = pd.read_csv("/mnt/d/outreachy-contributions-tracker/data/hERG_ccsign_features.csv")
@@ -359,7 +344,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 ```
 **random_state=42** setting makes sure we are getting same results on each run.  
 
-**Key Hyperparameter settings**
+**Key Hyperparameter settings ⚙️**
 
 1. **n_estimators=100**
 2. **class_weight='balanced'**
@@ -374,7 +359,7 @@ rf = RandomForestClassifier(n_estimators=100, random_state=42, class_weight='bal
 rf.fit(X_train, y_train)
 ```
 
-**Evaluating our model (RFC)**
+**Evaluating our model (RFC) 📖**
 
 | Accuracy | Precision | Recall |
 |----------|-----------|--------|
@@ -394,8 +379,7 @@ We are evaluating RFC model's performance on **20%** of test set (**131 compound
 
 **AUC = 0.86** indicates that our RFC has an **86%** probablility of ranking a randomly chosen positive instances **higher** than a randomly chosen negative ones.  
 
-**Our RFC is effectively identifying hERG blockers**
-
+**Our RFC is effectively identifying hERG blockers 🏅**
 
 **Confusion Matrix**  
 
@@ -411,17 +395,15 @@ We are evaluating RFC model's performance on **20%** of test set (**131 compound
 3.**False Positives (FP)** - Model **incorrectly classified 22 negative samples as positive** (**Very high false alarm rate**).  
 4.**False Negatives (FN)** - Model missed 5 actual positive cases (Very good job here)  
 
-We need to improve our **False Positive Rate** & also try improving **Recall**
+We need to improve our **False Positive Rate** & also try improving **Recall**  
 
-**RFC Tuning**
+**RFC Tuning 📍** - **notebooks/tuneRFC_hERG.py**  
 
-**Key hyperparamater changes**
+**Key hyperparamater changes ⚙️**
 
 1. **n_estimators=200** (Increased no.of.trees from **100** to **200**)
 2. **max_depth=10** (Limited tree's depth to 10 hoping to **lessen overfitting**)
 3. **class_weight={0:0.45, 1:0.55}** (Changed from balanced, assigned weights to each class, model will pay **slightly more attention to class1**)
-
-Path - **notebooks/tuneRFC_hERG.py**  
 
 ```
 rf = RandomForestClassifier(n_estimators=200, max_depth=10, class_weight={0:0.45, 1:0.55}, random_state=42)
@@ -440,13 +422,13 @@ But, results are not good.
 
 **Accuracy** stayed same & **Precision** decreased by **0.01**, **Recall** remained same.  
 
-**The reason could be limiting depth of the trees!!**  
+**The reason could be limiting depth of the trees!! 📖**  
 
 **ROC-AUC** Curve - Tuned RFC.  
 
 ![hERG_tuned_roc_curve (1)](https://github.com/user-attachments/assets/0e07d588-58b2-4337-a9c1-a245e613f7d9)  
 
-**AUC** moved down from **0.86** to **0.84**  
+**AUC** moved down from **0.86** to **0.84** 👎  
 
 **Confusion Matrix - Tuned RFC**  
 
@@ -459,16 +441,16 @@ But, results are not good.
 
 False positives **Increased** instead of **Decreasing**  
 
-**Not a good tune**  
+**Not a good tune ✖**  
 
-We can fine-tune RFC this time prioritizing the other class. But, let's try Xg-Boost.  
+We can fine-tune RFC this time prioritizing the other class. But, let's try **Xg-Boost**. 
 
-**Xg-Boost**  
+**Xg-Boost 📍**  
 
 - Unlike RFC, Xg-Boost builds decision trees sequentially. Each new tree learns from the errors of the previous tree. (This can help increase accuracy which is to be improved as it was just 0.79 when trained with RFC).
 - In Xg-Boost, trees that perform poorly are given more weight in subsequent iterations. (Also can help increase our accuracy).
 
-**Key Hyperparamater settings**  
+**Key Hyperparamater settings ⚙️**  
 
 1. **n_estimators=100** (Kept tree count optimal as more could lead to overfitting)
 2. **learning_rate=0.1** (I use 0.1 in general as it is neither too low like 0.01 nor too high like 0.2)
@@ -529,14 +511,13 @@ Moved from **0.95** to **0.92** (Need a lil tuning) 👍
 
 Though Accuracy & Precision improved in Xgb, we cannot prioritize it over RFC's results as False Negatives play a key role in blockage detection.
 
-**We can't be risking 2 more blockers being classified as non-blockers** for just numbers in our evaluation metrics.
+**We can't be risking 2 more blockers being classified as non-blockers** for just numbers in our evaluation metrics.  
 
 Next Goal - To **decrease false positives** protecting both accuracy and precision, Will tune **learning_rate** & **scale_pos_weight**.  
 
+**Xg-Boost Tuned 📍**  
 
-**Xg-Boost Tuned**  
-
-**Key hyperparameters changes**
+**Key hyperparameters changes ⚙️**
 
 - **n_estimators=200** (Increased trees from 100 to 200 with a hope that model learns more bioactivity differences)
 - **learning_rate=0.05** (Slowed down learning rate significantly, so model could learn better)
@@ -573,7 +554,7 @@ Implemented in **models/tune_xgb_hERG.py**
 
 **False Positives decreased slightly (from 7 to 6) 🥇**
 
-**Overall Analysis of models till now**  
+**Overall Analysis of models till now 🛸**  
 
 | Model | Accuracy | Precision | Recall | ROC-AUC |
 |-------|----------|-----------|--------|---------|
@@ -590,15 +571,19 @@ I would consider **XG-Boost Tuned is the best** among all four models.
 **ROC-AUC** - Slightly less AUC than RFC.
 **XG-Boost tuned has overall good performance**.
 
-**Next best** would be **RFC** as it's **Recall and AUC are the highest**.
+🪐**Next best** would be **RFC** as it's **Recall and AUC are the highest**.
 
-Leaderboard's **highest AUROC** is **0.88 ± 0.002**, they state that **RFC / SVM**s when paired with **extended-connectivity fingerprints** consistently outperformed all other recently developed models.
+Leaderboard's **highest AUROC** is **0.88 ± 0.002**, they state that **RFC / SVM**s when paired with **extended-connectivity fingerprints** consistently outperformed all other recently developed models.  
 
-So, next would be learning what '**extended-connectivity fingerprints**' are and then applying RFC.  
-
-
+So, next would be learning what '**extended-connectivity fingerprints**' are and then applying RFC 🚀.  
 
 
+## 📈 Evaluating performance
+
+## 📍Testing on ChEMBL hERG Dataset
+
+## 🔬 Implementing hERGAT paper
+ 
 
 
 
