@@ -575,10 +575,72 @@ I would consider **XG-Boost Tuned is the best** among all four models.
 
 Leaderboard's **highest AUROC** is **0.88 ± 0.002**, they state that **RFC / SVM**s when paired with **extended-connectivity fingerprints** consistently outperformed all other recently developed models.  
 
-So, next would be learning what '**extended-connectivity fingerprints**' are and then applying RFC 🚀.  
+So, next would be training on data that is featurized by '**extended-connectivity fingerprints**' 🚀.  
+
+**RFC on `eos4wt0` ☄️** - **[OtherFeaturizersAnalysis/Morgan_fingerprints_RFC.py](https://github.com/Pramodinikarlapudi/outreachy-contributions-tracker/blob/main/OtherFeaturizersAnalysis/Morgan_fingerprints_RFC.py)**  
+
+Same **default RFC model** is now trained on **Morgan fingerprints featurized data**  - **[data/hERG_Morgan_fingerprints_features.csv](https://github.com/Pramodinikarlapudi/outreachy-contributions-tracker/blob/main/data/hERG_Morgan_fingerprints_features.csv)**  
+
+**`Results`** significantly **Improved**  
+
+**ROC-AUC**  
+
+![hERG_Morgan_fingerprints_roc_curve](https://github.com/user-attachments/assets/ea90c9fc-3dd4-40a2-8f13-c1ec6ee17a3d)  
+
+**Confusion Matrix**  
+![hERG_Morgan_fingerprints_confusion_matrix](https://github.com/user-attachments/assets/f8917de9-d7b4-4500-a7a1-ff60384d3bc9)
 
 
-## 📈 Evaluating performance
+**Xg-Boost tuned** - **[OtherFeaturizersAnalsysis/Morgan_fingerprints_Xg-Boost_tuned.py](https://github.com/Pramodinikarlapudi/outreachy-contributions-tracker/blob/main/OtherFeaturizersAnalysis/Morgan_fingerprints_Xg-Boost_tuned.py)**  
+
+**ROC-AUC**  
+
+![hERG_Morgan_fingerprints_tune_xgb_roc_curve](https://github.com/user-attachments/assets/fff43e36-fc3f-4dad-af6a-a54bf55e68a2)  
+
+**Confusion Matrix**  
+
+![hERG_Morgan_fingerprints_tune_xgb_confusion_matrix](https://github.com/user-attachments/assets/8dc6419f-772b-419f-8d88-9a758a9b01a9)  
+
+**Xg-Boost Tune-02**  - **[Models/fingerprints_xgb_tune02.py](https://github.com/Pramodinikarlapudi/outreachy-contributions-tracker/blob/main/models/Morgan_fingerprints_xgb_tune02.py)**
+
+- **Key changes**
+```
+gamma=0.5 (Controlled unnecessary splits)
+min_child_weight=5 (removed weak branches that don't have enough data supporting them)
+threshold=0.55 (More cautious before classifying the compound as blocker - as i needed to reduce False Positives).
+
+```
+Results were **pretty good** and I was **able to achieve the ROC-AUC of 0.88** (Which is the highest in the TDC leader board).  
+
+**ROC-AUC**  
+
+![hERG_MFP_tune_xgb_roc_curve](https://github.com/user-attachments/assets/d8ad0b91-169a-4581-926e-08c57e1b53c0)  
+
+**Confusion Matrix**  
+
+![hERG_MFP_tune_xgb_confusion_matrix_thresh](https://github.com/user-attachments/assets/a1c93c06-f6e0-4ea4-b88b-5da7f5e2f44c)  
+
+**Clear Summary of Results**  
+
+| Model | Accuracy | Precision | Recall | ROC-AUC |
+|-------|----------|-----------|--------|---------|
+| **RFC** | 0.81 | 0.81 | 0.96 | 0.84 |
+| **Xg-Boost Tuned** | 0.83 | 0.83 | 0.97 | 0.86 |
+| **Xg-Boost Tune02** | **0.83** | **0.84** | **0.95** | **0.88** |
+
+## Evaluating performance ⋆⭒˚.⋆🔭  
+
+| Featurizer | Model | Accuracy | Precision | Recall | ROC-AUC |
+|------------|-------|----------|-----------|--------|---------|
+| **`eos4u6p`** | **RFC** | 0.79 | 0.80 | 0.95 | 0.86 |
+| **`eos4u6p`** | **RFC-Tuned** | 0.79 | 0.79 | 0.95 | 0.84 |
+| **`eos4u6p`** | **Xg-Boost** | 0.81 | 0.83 | 0.92 | 0.85 |
+| **`eos4u6p`** | **Xg-Boost Tuned** | 0.82 | 0.83 | 0.94 | 0.85 |
+| **`eos4wt0`** | **RFC** | 0.81 | 0.81 | 0.96 | 0.84 |
+| **`eos4wt0`** | **Xg-Boost Tuned** | **0.83** | 0.83 | **0.97** | 0.86 |
+| **`eos4wt0`** | **Xg-Boost Tune02** | **0.83** | **0.84** | 0.95 | **0.88** |
+
+Model's performance **Significantly** Increased on using **eos4wt0**  
 
 ## 📍Testing on ChEMBL hERG Dataset
 
