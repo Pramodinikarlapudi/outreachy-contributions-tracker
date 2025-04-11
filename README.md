@@ -12,149 +12,127 @@ The `human ether-a-go-go-related gene` (**hERG**) codes for a protein known as `
 - [Vitro](https://www.fda.gov/medical-devices/products-and-medical-procedures/in-vitro-diagnostics) & [QTc](https://pubmed.ncbi.nlm.nih.gov/36772881/) tests are both **time consuming** and **financially inefficient** as we have to test every single compound.
 - With the increasing **availability of data** related to hERG channel, **deep learning** models have recently emerged as a **more effective** approach to predict hERG blockers.
 
-## 🔎 Dataset details
+## 🔎 Dataset details  
 
-## Downloading hERG and Tox21 datasets from TDC (Therapeutics Data Commons), saving them to Google Drive and Git repo.  
+I have downloaded hERG dataset from **`TDC (Therapeutic Data Commons)`**, which has **648** drugs.  
 
-Tools we'll use -
+**Therapeutic Data Commons (TDC)** brings together high-quality datasets and tasks designed to `support machine learning` in therapeutic science.  
 
-1. Google Colab
-2. Google Drive
-3. Git Bash
+**It's a go to resource for drug discovery ML Workflows**.  
 
-**Setting up Colab :**
+**`Binary Classification`** : Given a **`SMILES`** string, predict whether it blocks(1) or not blocks(0).  
 
-Open a new notebook in Google Colab.  
+- A compound is considered a hERG blocker, if the `IC50` value is **less than 10µM** and a hERG non-blocker if it is **greater than 10µM**.
+- **IC50** represents the concentration of a drug or inhibtor required to `reduce a specific biological process by half`.
 
-Install the TDC library using  
-```
-!pip install PyTDC
-```
+**Downloading dataset 📥**  
 
-(It'll take a few seconds, we'll see "Successfully installed PyTDC" when it is done).  
+You can download dataset both from your **`google-colab`** and directly from **`VS Code WSH Terminal`**  
 
-I picked the hERG (Karim et al.) dataset from TDC. It has 13,445 compounds, but **scaffold split** gave me 655 (I feel it is decent).
+1. **Install the TDC library**
 
-To download hERG Dataset (Run this code):
+   ```
+   !pip install PyTDC
+   ```
+2. **Download dataset**
 
-```
-from tdc.single_pred import Tox
-data = Tox(name='hERG')
-```
+   ```
+   from tdc.single_pred import Tox
+   data = Tox(name='hERG')
+   ```
+3. **Split the data & Save it in your Drive**
 
-```
-split = data.get_split(method='scaffold')
-```
+   ```
+   split = data.get_split(method='Scaffold')
+   ```
+   - **Scaffold split method groups compounds by their scaffolds (Internal Structure)**.
+   - This would help `distribute` compounds with `different scaffolds across train, valid and test sets`.
 
-For hERG, **it took 13,445 compounds** and gave me a **smaller set** i.e., 458 train, 66 valid, 131 test (655 total).
+   If you are working on **google-colab**, mount your **g-drive**.
 
-(**Next step is heavily customizable -- you can choose not to save your datasets in your drive**).
+   ```
+   from google.colab
+   drive.mount('/content/drive')
+   ```
+   - It is always a **`good pratice`** to save your **`dataset in your drive`**.  
+   - Post Mounting your drive to your colab, **save a copy of dataset files in your machine on your drive**.
+     ```
+     split['train'].to_csv('/content/drive/MyDrive/TDC-Datasets/hERG_train.csv', index=False)
+     split['valid'].to_csv('/content/drive/MyDrive/TDC-Datasets/hERG_valid.csv', index=False)
+     split['test'].to_csv('/content/drive/MyDrive/TDC-Datasets/hERG_test.csv', index=False)
+     ```
+     This makes **`TDC-Datasets`** folder in '**Drive**' with three files (**Train**, **Test** & **Valid**).
 
-If you decide to save the dataset files in your drive (like me), first we'll have to connect Colab to your Drive.
+   - Please refer this [**video**](https://youtu.be/YV74aapk72A?si=NvvMEoY1IMJ9XViA), where i explained Installation process in detail.
 
-```
-from google.colab import drive
-drive.mount('/content/drive')
-```
+## 𓂃🖌 Visualizing compounds in 3D  
 
-On running this code, you will get directed to **sign-in page** of your Google Drive (Sign-in, allow permissions and let's proceed).
+Few colorful **3D visualizations** of compounds in our hERG dataset hurts no one ⋆˚✿˖°  
 
-After you come back to your Colab, It should say **"Mounted at /content/drive"** .
+I have **`converted`** a small subset of **`SMILES strings`** from the dataset **`into 3D SDF files`**.
 
-Now, let's save the hERG split to a folder in your Drive.  
+1. **SMILES Extraction** (From CSV files)  - Refer [**notebooks/extract_SMILES.py**](https://github.com/Pramodinikarlapudi/outreachy-contributions-tracker/blob/main/notebooks/extract_SMILES.py)
 
-```
-split['train'].to_csv('/content/drive/MyDrive/TDC-Datasets/hERG_train.csv', index=False)
-split['valid'].to_csv('/content/drive/MyDrive/TDC-Datasets/hERG_valid.csv', index=False)
-split['test'].to_csv('/content/drive/MyDrive/TDC-Datasets/hERG_test.csv', index=False)
+    ```
+    import pandas as pd
 
-```
+    train = pd.read_csv("/mnt/d/outreachy-contributions-tracker/data/hERG_train.csv")
+    valid = pd.read_csv("/mnt/d/outreachy-contributions-tracker/data/hERG_valid.csv")
+    test = pd.read_csv("/mnt/d/outreachy-contributions-tracker/data/hERG_test.csv")
+    ```
+    ```
+    all_smiles = pd.concat([train['Drug'], valid['Drug'], test['Drug']]).head(3)
+    all_smiles.to_csv("/mnt/d/outreachy-contributions-tracker/data/hERG_3_smiles.txt", index=False, header=False)
+    ```
+2. Install [**Open Babel**](https://openbabel.org/) to `convert SMILES strings into seperate 3D SDF files`.
+    I have done it manually to ensure accuracy but, can be done all at a time.
+   ```
+   echo "Oc1ccc(CCN2CCC(Nc3nc4ccccc4n3Cc3ccc(F)cc3)CC2)cc1" | obabel -i smi -o sdf -O data/hERG_mol_1.sdf --gen3D
+   echo "Fc1ccc(C(OCC[NH+]2CC[NH+](CCCc3ccccc3)CC2)c2ccc(F)cc2)cc1" | obabel -i smi -o sdf -O data/hERG_mol_2.sdf --gen3D
+   echo "CCCCCCC[N+](CC)(CC)CCCCc1ccc(Cl)cc1.CCCCCCC[N+](CC)(CC)CCCCc1ccc(Cl)cc1.CCCCCCC[N+](CC)(CC)CCCCc1ccc(Cl)cc1.O=P([O-])([O-])[O-]" | obabel -i smi -o sdf -O data/hERG_mol_3.sdf --gen3D
+   ```
+   These commands **create individual SDF files**, each `with 3D Co-ordinates` generated using -gen3D.
 
-This makes a '**TDC-Datasets**' folder in 'MyDrive' with the three files (Train, Valid, Test).
+3. **Download [Avogadro](https://avogadro.cc/) software**.
 
-We're done with installing our libraries and saving our files in GoogleDrive.
+   Saved `3D files` feel like they are just random numbers but, `are 3D co-ordinates representing compounds`.
 
-Next step is to download the files into our machine and push them into our repositories.
+   We'll need a visualization software like [Avogadro](https://avogadro.cc/), to actually see the compounds in 3D space.
 
-To download the files from our drive (Go to the drive > TDC-Datasets folder > right click on files and click on download).
+   - **Open each SDF file to generate 3D visualizations with the "Ball and Stick" display style**.
 
-Open your Git Bash terminal and push the data set files to your repository.  
+     ```
+     avogadro /mnt/d/outreachy-contributions-tracker/data/hERG_mol_1.sdf
+     ```
+   - **Repeat** the same command for all the **molecules you want to visualize**.
 
-Please refer to [This Video](https://youtu.be/YV74aapk72A?si=oWJm35VK9-bY9f7m), if you aren't able to follow these steps / face any issues.  
+ Here's **how first three molecules** from my dataset looks like ⋆⭒˚.⋆🪐 ⋆⭒˚.⋆  
 
-**3D Molecule Visualizations**  // Optional 
+ **SMILES** - **Oc1ccc(CCN2CCC(Nc3nc4ccccc4n3Cc3ccc(F)cc3)CC2)cc1**  
+ 
+  ![hERG_mol_1](https://github.com/user-attachments/assets/06970794-5ff5-4737-8ee0-02db874efa49)
 
-I have converted a very small subset of SMILES strings from the hERG dataset into 3D SDF files.  
-
-The first three SMILES strings from the 'Drug' Column of 'hERG_train.csv', 'hERG_valid.csv', 'hERG_test.csv' (Combined)  
-
-**SMILES List**
-
-1. `Oc1ccc(CCN2CCC(Nc3nc4ccccc4n3Cc3ccc(F)cc3)CC2)cc1`
-   
-   ![hERG_mol_1](https://github.com/user-attachments/assets/06970794-5ff5-4737-8ee0-02db874efa49)
-
-2. `Fc1ccc(C(OCC[NH+]2CC[NH+](CCCc3ccccc3)CC2)c2ccc(F)cc2)cc1`
-   
+ **SMILES** - **Fc1ccc(C(OCC[NH+]2CC[NH+](CCCc3ccccc3)CC2)c2ccc(F)cc2)cc1**  
+ 
    ![hERG_mol_2](https://github.com/user-attachments/assets/5e110e00-ffac-4764-b286-8225348565df)
 
-3. `CCCCCCC[N+](CC)(CC)CCCCc1ccc(Cl)cc1.CCCCCCC[N+](CC)(CC)CCCCc1ccc(Cl)cc1.CCCCCCC[N+](CC)(CC)CCCCc1ccc(Cl)cc1.O=P([O-])([O-])[O-]`
-   
+ **SMILES** - **CCCCCCC[N+](CC)(CC)CCCCc1ccc(Cl)cc1.CCCCCCC[N+](CC)(CC)CCCCc1ccc(Cl)cc1.CCCCCCC[N+](CC)(CC)CCCCc1ccc(Cl)cc1.O=P([O-])([O-])[O-]**  
+ 
    ![hERG_mol_3](https://github.com/user-attachments/assets/5098da8e-e8ac-4470-9e1b-316f80157312)
 
-**Step01**
 
-SMILES Extraction (from CSV files to create a manageable subset)  
 
-refer **notebooks/extract_smiles.py**  
 
-```
-import pandas as pd
+## 👩🏻‍💻 Featurizing using Ersilia Representation Models
 
-train = pd.read_csv("/mnt/d/outreachy-contributions-tracker/data/hERG_train.csv")
-valid = pd.read_csv("/mnt/d/outreachy-contributions-tracker/data/hERG_valid.csv")
-test = pd.read_csv("/mnt/d/outreachy-contributions-tracker/data/hERG_test.csv")
+## </> Training RFC & Xg-boost models
 
-```
+## 📈 Evaluating performance
 
-```
-all_smiles = pd.concat([train['Drug'], valid['Drug'], test['Drug']]).head(3)
-all_smiles.to_csv("/mnt/d/outreachy-contributions-tracker/data/hERG_3_smiles.txt", index=False, header=False)
+## 📍Testing on ChEMBL hERG Dataset
 
-```
-
-**Step 02**  
-
-You'll need Open Babel (to help you convert SMILES strings to a seperate 3D SDF file manually)  
-
-(I have done it manually to ensure accuracy but, can just be done all at a time)  
-
-```
-echo "Oc1ccc(CCN2CCC(Nc3nc4ccccc4n3Cc3ccc(F)cc3)CC2)cc1" | obabel -i smi -o sdf -O data/hERG_mol_1.sdf --gen3D
-echo "Fc1ccc(C(OCC[NH+]2CC[NH+](CCCc3ccccc3)CC2)c2ccc(F)cc2)cc1" | obabel -i smi -o sdf -O data/hERG_mol_2.sdf --gen3D
-echo "CCCCCCC[N+](CC)(CC)CCCCc1ccc(Cl)cc1.CCCCCCC[N+](CC)(CC)CCCCc1ccc(Cl)cc1.CCCCCCC[N+](CC)(CC)CCCCc1ccc(Cl)cc1.O=P([O-])([O-])[O-]" | obabel -i smi -o sdf -O data/hERG_mol_3.sdf --gen3D
-
- ```
-
-Above commands create individual SDF files, each with 3D coordinates generated using **--gen3D**.  
-
-**Step 03**
-
-We'll be seeing only some random numbers in our saved SDF files.  
-
-Download **Avogadro** from avogrado.com for being able to visualize the 3D structures using our saved files.  
-
-Open each SDF file to generate 3D visualizations with the "Ball and Stick" display style.  
-
-```
-
-avogadro /mnt/d/outreachy-contributions-tracker/data/hERG_mol_1.sdf
-
-```
-
-We can repeat the same command for all the molecules we want to visualize (understand it's structure).  
-
-This command automatically opens avogadro software and you will be directed to the visualization.  
+## 🔬 Implementing hERGAT paper
+  
 
 path  
 - **notebooks/visuals_hERG.py**
